@@ -64,10 +64,10 @@ app.get("/api/:query/:s?/:e?", async (req, res) => {
         target: targets.ANY
     });
     let input = { media: media };
-    if (req.query.s)
-        input.sourceOrder = req.query.s.split(",");
-    if (req.query.e)
-        input.embedOrder = req.query.e.split(",");
+    if (req.query.so && req.query.so.length)
+        input.sourceOrder = req.query.so.split(",");
+    if (req.query.eo && req.query.eo.length)
+        input.embedOrder = req.query.eo.split(",");
     let output = await providers.runAll(input);
     if (output)
         output.media = media;

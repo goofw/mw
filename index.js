@@ -69,6 +69,9 @@ app.get("/api/:query/:s?/:e?", async (req, res) => {
     res.json(output);
 });
 
-app.use(/^\/(?!config.js)$/, express.static('movie-web'));
+app.use('/config.js', (req, res) => {
+    res.status(403).end('403 Forbidden')
+})
+app.use(express.static('movie-web'));
 
 app.listen(port, () => console.log(`Server ready on port ${port}.`));

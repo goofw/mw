@@ -4,15 +4,12 @@ const app = express();
 const port = process.env.PORT || 3000;
 
 async function makeTMDBRequest(url) {
-    const headers = {
-        accept: 'application/json'
-    };
-    const requestURL = new URL(url);
-    const key = process.env.TMDB_API_KEY;
-    requestURL.searchParams.append('api_key', key);
-    return fetch(requestURL, {
+    return fetch(new URL(url), {
         method: 'GET',
-        headers
+        headers: {
+            accept: 'application/json',
+            authorization: `Bearer ${process.env.TMDB_READ_API_KEY}`
+        }
     });
 }
 

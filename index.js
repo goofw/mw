@@ -68,9 +68,8 @@ app.get("/api/:query/:s?/:e?", async (req, res) => {
         input.sourceOrder = req.query.so.split(",");
     if (req.query.eo && req.query.eo.length)
         input.embedOrder = req.query.eo.split(",");
-    let output = await providers.runAll(input);
-    if (output)
-        output.media = media;
+    let output = await providers.runAll(input) || {};
+    output.media = media;
     res.json(output);
 });
 

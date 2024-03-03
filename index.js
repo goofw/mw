@@ -69,9 +69,9 @@ app.get("/api/:query/:s?/:e?", async (req, res) => {
     res.json(output);
 });
 
-app.use('/config.js', (req, res) => {
-    res.status(404).end();
-})
+//app.use('/config.js', (req, res) => {
+//    res.status(404).end();
+//})
 app.use(express.static('movie-web'));
 
 app.listen(port, () => console.log(`Server ready on port ${port}.`));

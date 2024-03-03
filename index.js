@@ -70,7 +70,7 @@ app.get("/api/:query/:s?/:e?", async (req, res) => {
 });
 
 app.use('/config.js', (req, res) => {
-    res.status(403).end('403 Forbidden')
+    res.status(404).end();
 })
 app.use(express.static('movie-web'));
 

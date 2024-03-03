@@ -63,6 +63,23 @@ app.get("/api/:query/:s?/:e?", async (req, res) => {
         fetcher: makeStandardFetcher(fetch),
         target: targets.ANY
     });
+
+    if (req.query.debug) {
+        let debug_output = [];
+        debug_output.push(await providers.runSourceScraper({
+            id: req.query.debug,
+            media: media
+        }));
+        for (embed of debug_output[0].embeds) {
+            debug_output.push(await providers.runEmbedScraper({
+                id: embed.embedId,
+                url: embed.url
+            }));
+        }
+        res.json(debug_output);
+        res.end();
+    }
+
     let input = { media: media };
     if (req.query.so && req.query.so.length)
         input.sourceOrder = req.query.so.split(",");

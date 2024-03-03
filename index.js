@@ -63,10 +63,23 @@ app.get("/api/:query/:s?/:e?", async (req, res) => {
         fetcher: makeStandardFetcher(fetch),
         target: targets.ANY
     });
-    let output = await providers.runAll({ media: media })
+    let input = { media: media };
+    if (req.query.s)
+        input.sourceOrder = req.query.s.split(",");
+    if (req.query.e)
+        input.embedOrder = req.query.e.split(",");
+    let output = await providers.runAll(input);
     if (output)
         output.media = media;
     res.json(output);
+});
+
+app.get("/metadata", async (req, res) => {
+    const providers = makeProviders({
+        fetcher: makeStandardFetcher(fetch),
+        target: targets.ANY
+    });
+    res.json([providers.listSources(), providers.listEmbeds()]);
 });
 
 //app.use('/config.js', (req, res) => {

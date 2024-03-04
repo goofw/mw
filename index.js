@@ -13,6 +13,14 @@ async function makeTMDBRequest(url) {
     });
 }
 
+async function getIMDBId(query, media_type, id) {
+    if (query.match(/tt\d+/))
+        return query;
+    let response = await makeTMDBRequest(`https://api.themoviedb.org/3/${media_type}/${id}?append_to_response=external_ids`);
+    response = await response.json();
+    return response.external_ids.imdb_id;
+}
+
 async function getMediaDetails(query, s = 1, e = 1) {
     let url = null;
     if (query.match(/tt\d+/))
@@ -25,22 +33,25 @@ async function getMediaDetails(query, s = 1, e = 1) {
         response = response.results[0];
     else
         response = response.movie_results[0] || response.tv_results[0];
+    const imdbId = await getIMDBId(query, response.media_type, response.id);
+    
     if (response.media_type === "movie") {
         return {
             type: 'movie',
             title: response.title,
             releaseYear: Number(response.release_date.split('-')[0]),
             tmdbId: response.id,
-            imdbId: query
+            imdbId: imdbId
         };
     }
+    
     if (response.media_type === "tv") {
         return {
             type: 'show',
             title: response.name,
             releaseYear: Number(response.first_air_date.split('-')[0]),
             tmdbId: response.id,
-            imdbId: query,
+            imdbId: imdbId,
             season: {
                 number: s
             },
@@ -60,27 +71,11 @@ app.get("/:imdbId/:s?/:e?", async (req, res, next) => {
 });
 
 app.get("/api/:query/:s?/:e?", async (req, res) => {
-    const media = await getMediaDetails(req.params.query, req.params.s || 1, req.params.e || 1);
+    let media = await getMediaDetails(req.params.query, req.params.s || 1, req.params.e || 1);
     const providers = makeProviders({
         fetcher: makeStandardFetcher(fetch),
         target: targets.ANY
     });
-
-    if (req.query.debug) {
-        let debug_output = [];
-        debug_output.push(await providers.runSourceScraper({
-            id: req.query.debug,
-            media: media
-        }));
-        for (embed of debug_output[0].embeds) {
-            debug_output.push(await providers.runEmbedScraper({
-                id: embed.embedId,
-                url: embed.url
-            }));
-        }
-        res.json(debug_output);
-        res.end();
-    }
 
     let input = { media: media };
     if (req.query.so && req.query.so.length)
@@ -100,9 +95,7 @@ app.get("/metadata", async (req, res) => {
     res.json([providers.listSources(), providers.listEmbeds()]);
 });
 
-//app.use('/config.js', (req, res) => {
-//    res.status(404).end();
-//})
+//app.use('/config.js', (req, res) => { res.status(404).end(); })
 app.use(express.static('movie-web'));
 
 app.listen(port, () => console.log(`Server ready on port ${port}.`));

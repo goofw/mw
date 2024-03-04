@@ -30,7 +30,8 @@ async function getMediaDetails(query, s = 1, e = 1) {
             type: 'movie',
             title: response.title,
             releaseYear: Number(response.release_date.split('-')[0]),
-            tmdbId: response.id
+            tmdbId: response.id,
+            imdbId: query
         };
     }
     if (response.media_type === "tv") {
@@ -39,6 +40,7 @@ async function getMediaDetails(query, s = 1, e = 1) {
             title: response.name,
             releaseYear: Number(response.first_air_date.split('-')[0]),
             tmdbId: response.id,
+            imdbId: query,
             season: {
                 number: s
             },

@@ -99,3 +99,4 @@ app.get("/metadata", async (req, res) => {
 app.use(express.static('movie-web'));
 
 app.listen(port, () => console.log(`Server ready on port ${port}.`));
+module.exports = app;

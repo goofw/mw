@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "build": "sh build.sh",
     "start": "node index.js"
   },
   "keywords": [],

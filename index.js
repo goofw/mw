@@ -8,7 +8,7 @@ async function makeTMDBRequest(url) {
         method: 'GET',
         headers: {
             accept: 'application/json',
-            authorization: `Bearer ${process.env.TMDB_READ_API_KEY}`
+            authorization: "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIzNzIzYmFiNjEyZGQ2ODE0ZGU5N2NhNTM3NjliOGZmMiIsInN1YiI6IjY1MTVlYjBkY2FkYjZiMDJiZjAxMWZiNSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.8m-XSM_5y3xP3UwfhDD_kmM54SU5NW0c9Oe_j_BZhdQ"
         }
     });
 }

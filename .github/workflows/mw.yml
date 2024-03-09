@@ -1,10 +1,12 @@
 name: mw
 
 on:
+  workflow_dispatch:
   push:
     paths:
       - '.github/workflows/mw.yml'
-  workflow_dispatch:
+  schedule:
+    - cron: '50 22 * * *'
 
 permissions:
   contents: read

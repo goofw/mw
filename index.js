@@ -95,7 +95,8 @@ app.get("/metadata", async (req, res) => {
     res.json([providers.listSources(), providers.listEmbeds()]);
 });
 
-//app.use('/config.js', (req, res) => { res.status(404).end(); })
-app.use(express.static('movie-web'));
+app.use((req, res) => {
+    res.redirect("https://goofw.github.io/mw");
+});
 
 app.listen(port, () => console.log(`Server ready on port ${port}.`));

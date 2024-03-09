@@ -21,6 +21,11 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
+      - uses: Mattraks/delete-workflow-runs@main
+        with:
+          retain_days: 1
+          keep_minimum_runs: 1
+          
       - uses: actions/checkout@v4
         with:
           repository: movie-web/movie-web
@@ -31,6 +36,7 @@ jobs:
           VITE_CORS_PROXY_URL: ${{ secrets.CORS_PROXY_URL }}
           VITE_TMDB_READ_API_KEY: ${{ secrets.TMDB_READ_API_KEY }}
         run: |
+          sed -i 's|fetch("/ping.txt"|fetch("/mw/ping.txt"|g' src/hooks/usePing.ts
           npm i -g pnpm
           pnpm install
           pnpm run build

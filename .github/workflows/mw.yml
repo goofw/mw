@@ -31,6 +31,8 @@ jobs:
     runs-on: ubuntu-latest
     env:
       VITE_BASE_URL: /mw/
+      VITE_CORS_PROXY_URL: ${{ secrets.CORS_PROXY_URL }}
+      VITE_TMDB_READ_API_KEY: ${{ secrets.TMDB_READ_API_KEY }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4

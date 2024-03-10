@@ -21,6 +21,12 @@ async function getIMDBId(query, media_type, id) {
     return response.external_ids.imdb_id;
 }
 
+async function getEpisodeName(id, s, e) {
+    let response = await makeTMDBRequest(`https://api.themoviedb.org/3/tv/${id}/season/${s}/episode/${e}`);
+    response = await response.json();
+    return response.name;
+}
+
 async function getMediaDetails(query, s = 1, e = 1) {
     let url = null;
     if (query.match(/tt\d+/))
@@ -56,7 +62,8 @@ async function getMediaDetails(query, s = 1, e = 1) {
                 number: s
             },
             episode: {
-                number: e
+                number: e,
+                name: getEpisodeName(response.id, s, e)
             }
         };
     }

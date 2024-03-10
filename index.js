@@ -63,7 +63,7 @@ async function getMediaDetails(query, s = 1, e = 1) {
             },
             episode: {
                 number: e,
-                name: getEpisodeName(response.id, s, e)
+                name: await getEpisodeName(response.id, s, e)
             }
         };
     }

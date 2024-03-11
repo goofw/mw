@@ -21,12 +21,7 @@ concurrency:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    steps:
-      - uses: Mattraks/delete-workflow-runs@main
-        with:
-          retain_days: 1
-          keep_minimum_runs: 1
-          
+    steps:    
       - uses: actions/checkout@v4
         with:
           repository: movie-web/movie-web
@@ -47,3 +42,8 @@ jobs:
         with:
           path: './dist'
       - uses: actions/deploy-pages@v4
+
+      - uses: Mattraks/delete-workflow-runs@main
+        with:
+          retain_days: 1
+          keep_minimum_runs: 1

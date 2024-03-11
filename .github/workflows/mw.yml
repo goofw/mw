@@ -8,10 +8,11 @@ on:
   schedule:
     - cron: '50 22 * * *'
 
-#permissions:
-#  contents: read
-#  pages: write
-#  id-token: write
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+  actions: write
 
 concurrency:
   group: "mw"
@@ -20,7 +21,12 @@ concurrency:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    steps:    
+    steps:
+      - uses: Mattraks/delete-workflow-runs@main
+        with:
+          retain_days: 1
+          keep_minimum_runs: 1
+          
       - uses: actions/checkout@v4
         with:
           repository: movie-web/movie-web
@@ -41,8 +47,3 @@ jobs:
         with:
           path: './dist'
       - uses: actions/deploy-pages@v4
-
-      - uses: Mattraks/delete-workflow-runs@main
-        with:
-          retain_days: 1
-          keep_minimum_runs: 1

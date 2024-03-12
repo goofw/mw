@@ -19,6 +19,18 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:    
+      - uses: actions/checkout@v4
+      - run: |
+          echo $(date) > VERSION
+          git config user.name $(git log -1 --pretty=format:'%an')
+          git config user.email $(git log -1 --pretty=format:'%ae')
+          git add .
+          git diff-index --quiet HEAD || git commit -m "update"
+          git push
+          
   deploy:
     runs-on: ubuntu-latest
     steps:    

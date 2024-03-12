@@ -102,6 +102,10 @@ app.get("/metadata", async (req, res) => {
     res.json([providers.listSources(), providers.listEmbeds()]);
 });
 
+app.get("/version", async (req, res) => {
+    res.send(require("./node_modules/@movie-web/providers/package.json").version);
+});
+
 app.use((req, res) => {
     res.redirect("https://goofw.github.io/mw");
 });

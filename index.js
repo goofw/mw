@@ -104,7 +104,7 @@ app.get("/metadata", async (req, res) => {
 
 app.get("/version", (req, res) => {
     let version = require("fs").readFileSync("VERSION", "utf-8");
-    version += require("./node_modules/@movie-web/providers/package.json").version;
+    version += require("./node_modules/@movie-web/providers/package.json").version + "\n";
     res.send(version);
 });
 

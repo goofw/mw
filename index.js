@@ -99,17 +99,19 @@ app.get("/metadata", async (req, res) => {
         fetcher: makeStandardFetcher(fetch),
         target: targets.ANY
     });
-    res.json([providers.listSources(), providers.listEmbeds()]);
+    res.send(
+        providers.listSources().map(s => s.id).join(",") + "\n" +
+        providers.listEmbeds().map(e => e.id).join(",") + "\n"
+    );
 });
 
 app.get("/version", (req, res) => {
-    let version = require("fs").readFileSync(__dirname + "/VERSION", "utf-8");
-    version += require("./node_modules/@movie-web/providers/package.json").version + "\n";
-    res.send(version);
+    res.send(
+        require("fs").readFileSync(__dirname + "/VERSION", "utf-8") +
+        require("./node_modules/@movie-web/providers/package.json").version + "\n"
+    );
 });
 
-app.use((req, res) => {
-    res.redirect("https://goofw.github.io/mw");
-});
+app.use((req, res) => { res.sendStatus(403); });
 
 app.listen(port, () => console.log(`Server ready on port ${port}.`));

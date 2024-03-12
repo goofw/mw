@@ -102,9 +102,10 @@ app.get("/metadata", async (req, res) => {
     res.json([providers.listSources(), providers.listEmbeds()]);
 });
 
-app.use('/version', express.static('VERSION'));
-app.get("/version", async (req, res) => {
-    res.send(require("./node_modules/@movie-web/providers/package.json").version);
+app.get("/version", (req, res) => {
+    let version = require("fs").readFileSync("VERSION", "utf-8");
+    version += require("./node_modules/@movie-web/providers/package.json").version;
+    res.send(version);
 });
 
 app.use((req, res) => {

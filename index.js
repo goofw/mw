@@ -112,6 +112,10 @@ app.get("/version", (req, res) => {
     );
 });
 
+app.get("/ip", async (req, res) => {
+    res.json(await (await fetch("https://ipinfo.io/json")).json());
+});
+
 app.use((req, res) => { res.sendStatus(403); });
 
 app.listen(port, () => console.log(`Server ready on port ${port}.`));

@@ -23,6 +23,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:    
       - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18
       - run: |
           echo $(date) > VERSION
           git config user.name $(git log -1 --pretty=format:'%an')
@@ -30,6 +33,48 @@ jobs:
           git add .
           git diff-index --quiet HEAD || git commit -m "update"
           git push
+
+          VERSION = $(cat VERSION)
+          npm install -g pkg
+          pkg -t node18-macos-x64,node18-linux-x64,node18-alpine-x64 index.js
+          mv index-macos mw && tar -zcvf mw-macos-amd64.tar.gz mw
+          mv index-linux mw && tar -zcvf mw-linux-amd64.tar.gz mw
+          mv index-alpine mw && tar -zcvf mw-alpine-amd64.tar.gz mw
+
+      - id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ env.VERSION }}
+          release_name: ${{ env.VERSION }}
+          
+      - uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: mw-macos-amd64.tar.gz
+          asset_name: mw-macos-amd64.tar.gz
+          asset_content_type: application/gzip
+
+      - uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: mw-linux-amd64.tar.gz
+          asset_name: mw-linux-amd64.tar.gz
+          asset_content_type: application/gzip
+
+      - uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: mw-alpine-amd64.tar.gz
+          asset_name: mw-alpine-amd64.tar.gz
+          asset_content_type: application/gzip
           
   deploy:
     runs-on: ubuntu-latest

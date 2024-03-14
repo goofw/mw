@@ -40,7 +40,7 @@ jobs:
           sed -i 's|console.log(.*)||g' node_modules/@movie-web/providers/lib/index.mjs
           npm install -g pkg
           pkg -t node18-macos-x64,node18-linux-x64,node18-alpine-x64 index.js
-          mv index-macos mw && tar -zcvf mw-macos-amd64.tar.gz movie-web
+          mv index-macos movie-web && tar -zcvf mw-macos-amd64.tar.gz movie-web
           mv index-linux mw && tar -zcvf mw-linux-amd64.tar.gz mw
           mv index-alpine mw && tar -zcvf mw-alpine-amd64.tar.gz mw
           echo "VERSION=$(date +%Y%m%d.%H%M%S)" >> $GITHUB_ENV

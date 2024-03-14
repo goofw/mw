@@ -34,6 +34,7 @@ jobs:
           git diff-index --quiet HEAD || git commit -m "update"
           git push
 
+          npm install
           npm install -g pkg
           pkg -t node18-macos-x64,node18-linux-x64,node18-alpine-x64 index.js
           mv index-macos mw && tar -zcvf mw-macos-amd64.tar.gz mw

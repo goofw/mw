@@ -2,9 +2,9 @@ name: mw
 
 on:
   workflow_dispatch:
-  push:
-    paths:
-      - '.github/workflows/mw.yml'
+  #push:
+  #  paths:
+  #    - '.github/workflows/mw.yml'
   schedule:
     - cron: '50 22 * * *'
 
@@ -81,6 +81,12 @@ jobs:
           asset_path: mw-alpine-amd64.tar.gz
           asset_name: mw-alpine-amd64.tar.gz
           asset_content_type: application/gzip
+
+      - uses: dev-drprasad/delete-older-releases@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          keep_latest: 5
           
   deploy:
     runs-on: ubuntu-latest

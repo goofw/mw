@@ -2,7 +2,7 @@ const { ProxyAgent } = require('proxy-agent');
 //const no_proxy_fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
 const fetch = (resource, options) => require("node-fetch")(resource, { ...options, agent: new ProxyAgent()});
 
-const { makeProviders, makeStandardFetcher, targets } = require('@movie-web/providers');
+const { buildProviders, getBuiltinSources, getBuiltinEmbeds, makeProviders, makeStandardFetcher, targets } = require('@movie-web/providers');
 const providers = makeProviders({
     fetcher: makeStandardFetcher(fetch),
     target: targets.ANY,

@@ -82,6 +82,19 @@ async function mw(query, s = 1, e = 1, so = "", eo = "") {
         input.sourceOrder = so.split(",");
     if (eo && eo.length)
         input.embedOrder = eo.split(",");
+    
+    const sources = input.sourceOrder ?? getBuiltinSources().map(s => s.id);
+    const embeds = input.embedOrder ?? getBuiltinEmbeds().map(e => e.id);
+    let providers = buildProviders()
+        .setFetcher(makeStandardFetcher(fetch))
+        .setTarget(targets.ANY)
+        .enableConsistentIpForRequests()
+    for (let source of sources)
+        providers.addSource(source)
+    for (let embed of embeds)
+        providers.addEmbed(embed)
+    providers = providers.build();
+    
     let output = await providers.runAll(input) || {};
     //let output = await providers.runSourceScraper({...input, id: input.sourceOrder[0]}) || {};
     output.media = media;

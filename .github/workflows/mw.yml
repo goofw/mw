@@ -32,7 +32,7 @@ jobs:
           git diff-index --quiet HEAD || git commit -m "update"
           git push
 
-          #sed -i '' 's|latest|github:movie-web/providers|g' package.json
+          sed -i '' 's|latest|github:movie-web/providers|g' package.json
           bun install
           sed -i '' 's|console.log(.*);||g' node_modules/@movie-web/providers/lib/index.mjs
           sed -i '' 's|console.log(.*)||g' node_modules/@movie-web/providers/lib/index.mjs

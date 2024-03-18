@@ -13,18 +13,8 @@ const {
     }
 })();
 
-const proxy_fetch = await (async () => {
-    try {
-        const { ProxyAgent } = await import("proxy-agent");
-        const { default: node_fetch } = await import("node-fetch");
-        return (resource, options) => node_fetch(resource, { ...options, agent: new ProxyAgent() });
-    } catch {
-        return fetch;
-    }
-})();
-
 async function makeTMDBRequest(url) {
-    return proxy_fetch(new URL(url), {
+    return fetch(new URL(url), {
         method: 'GET',
         headers: {
             accept: 'application/json',
@@ -100,7 +90,7 @@ export async function mw(query, s = 1, e = 1, so = "", eo = "") {
     const sources = input.sourceOrder ?? getBuiltinSources().map(s => s.id);
     const embeds = input.embedOrder ?? getBuiltinEmbeds().map(e => e.id);
     let providers = buildProviders()
-        .setFetcher(makeStandardFetcher(proxy_fetch))
+        .setFetcher(makeStandardFetcher(fetch))
         .setTarget(targets.ANY)
         .enableConsistentIpForRequests()
     for (let source of sources)
@@ -116,7 +106,7 @@ export async function mw(query, s = 1, e = 1, so = "", eo = "") {
 }
 
 const default_providers = makeProviders({
-    fetcher: makeStandardFetcher(proxy_fetch),
+    fetcher: makeStandardFetcher(fetch),
     target: targets.ANY,
     consistentIpForRequests: true
 });

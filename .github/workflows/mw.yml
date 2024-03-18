@@ -20,12 +20,10 @@ concurrency:
 
 jobs:
   update:
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     steps:    
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 18
+      - uses: actions/checkout@main
+      - uses: oven-sh/setup-bun@main
       - run: |
           echo $(date) > VERSION
           git config user.name $(git log -1 --pretty=format:'%an')
@@ -34,17 +32,14 @@ jobs:
           git diff-index --quiet HEAD || git commit -m "update"
           git push
 
-          sed -i 's|latest|github:movie-web/providers|g' package.json
-          npm install
-          sed -i 's|console.log(.*);||g' node_modules/@movie-web/providers/lib/index.mjs
-          sed -i 's|console.log(.*)||g' node_modules/@movie-web/providers/lib/index.mjs
-          sed -i 's|console.log(.*);||g' node_modules/@movie-web/providers/lib/index.umd.js
-          sed -i 's|console.log(.*)||g' node_modules/@movie-web/providers/lib/index.umd.js
-          npm install -g pkg
-          pkg -t node18-macos-x64,node18-linux-x64,node18-alpine-x64 index.js
-          mv index-macos movie-web && tar -zcvf mw-macos-amd64.tar.gz movie-web
-          mv index-linux mw && tar -zcvf mw-linux-amd64.tar.gz mw
-          mv index-alpine mw && tar -zcvf mw-alpine-amd64.tar.gz mw
+          #sed -i '' 's|latest|github:movie-web/providers|g' package.json
+          bun install
+          sed -i '' 's|console.log(.*);||g' node_modules/@movie-web/providers/lib/index.mjs
+          sed -i '' 's|console.log(.*)||g' node_modules/@movie-web/providers/lib/index.mjs
+          sed -i '' 's|console.log(.*);||g' node_modules/@movie-web/providers/lib/index.umd.js
+          sed -i '' 's|console.log(.*)||g' node_modules/@movie-web/providers/lib/index.umd.js
+          bun build --compile --minify --outfile movie-web index.mjs
+          tar -zcvf mw-macos-amd64.tar.gz movie-web
           echo "VERSION=$(date +%Y%m%d.%H%M%S)" >> $GITHUB_ENV
 
       - id: create_release
@@ -64,24 +59,6 @@ jobs:
           asset_name: mw-macos-amd64.tar.gz
           asset_content_type: application/gzip
 
-      - uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: mw-linux-amd64.tar.gz
-          asset_name: mw-linux-amd64.tar.gz
-          asset_content_type: application/gzip
-
-      - uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: mw-alpine-amd64.tar.gz
-          asset_name: mw-alpine-amd64.tar.gz
-          asset_content_type: application/gzip
-
       - uses: dev-drprasad/delete-older-releases@master
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -91,11 +68,11 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:    
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@main
         with:
           repository: movie-web/movie-web
           
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@main
       - env:
           VITE_BASE_URL: /mw/
           VITE_CORS_PROXY_URL: ${{ secrets.CORS_PROXY_URL }}
@@ -106,11 +83,11 @@ jobs:
           pnpm install
           pnpm run build
           
-      - uses: actions/configure-pages@v4
-      - uses: actions/upload-pages-artifact@v3
+      - uses: actions/configure-pages@main
+      - uses: actions/upload-pages-artifact@main
         with:
           path: './dist'
-      - uses: actions/deploy-pages@v4
+      - uses: actions/deploy-pages@main
 
       - uses: Mattraks/delete-workflow-runs@main
         with:

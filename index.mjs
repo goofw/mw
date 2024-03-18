@@ -1,42 +1,33 @@
+import { readFileSync } from "node:fs"
+import { createServer } from 'node:http'
+import { createServerAdapter } from '@whatwg-node/server'
+import { createResponse, error, Router, text, withParams } from 'itty-router'
 import { mw, metadata } from "./mw.mjs"
-import express from "express"
-import fs from "fs"
 
 if (process.argv.length === 2 ) {
-    const app = express();
+    const router = Router();
     const port = process.env.PORT || 3000;
-    
-    app.set('json spaces', 4);
-    
-    app.get("/:imdbId/:s?/:e?", async (req, res, next) => {
-        if (req.params.imdbId.match(/tt\d+/))
-            req.url = "/api" + req.url;
-        next();
-    });
-    
-    app.get("/api/:query/:s?/:e?", async (req, res) => {
-        res.json(await mw(req.params.query, req.params.s, req.params.e, req.query.so, req.query.eo));
-    });
-    
-    app.get("/metadata", async (req, res) => {
-        res.send(metadata);
-    });
-    
-    app.get("/version", (req, res) => {
-        res.send(
-            fs.readFileSync(import.meta.url.split('/').slice(2,-1).join('/') + "/VERSION", "utf-8") +
-            JSON.parse(fs.readFileSync("./node_modules/@movie-web/providers/package.json")).version + "\n"
-        );
-    });
-    
-    app.get("/ip", async (req, res) => {
-        res.json(await (await fetch("https://ipinfo.io/json")).json());
-    });
-    
-    app.use((req, res) => { res.sendStatus(403); });
-    
-    app.listen(port, () => console.log(`Server ready on port ${port}.`));
+    createServer(createServerAdapter(request => router
+        .all("*", withParams)
+        .get("/:imdb/:s?/:e?", req => {
+            if (req.params.imdb.match(/tt\d+/)) {
+                const new_url = new URL(req.url);
+                new_url.pathname = "/api" + new_url.pathname
+                return router.handle(new Request(new_url));
+            }
+        })
+        .get("/api/:imdb/:s?/:e?", ({ imdb, s, e, query }) => mw(imdb, s, e, query?.so, query?.eo))
+        .get("/metadata", () => text(metadata))
+        .get("/version", () => text(
+            readFileSync(import.meta.url.split('/').slice(2,-1).join('/') + "/VERSION", "utf-8") +
+            JSON.parse(readFileSync("./node_modules/@movie-web/providers/package.json")).version + "\n"
+        ))
+        .get("/ip", () => fetch("https://ipinfo.io/json"))
+        .all("*", () => error(404))
+        .handle(request)
+        .then(createResponse("application/json", v => JSON.stringify(v, null, 4)))
+        .catch(error)
+    )).listen(port, () => console.log(`Server ready on port ${port}.`));
 } else {
-    const json = await mw(...process.argv.slice(2, 7));
-    console.log(JSON.stringify(json, null, 4));
+    console.log(JSON.stringify(await mw(...process.argv.slice(2, 7)), null, 4));
 }

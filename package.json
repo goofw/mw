@@ -10,6 +10,7 @@
     "license": "ISC",
     "dependencies": {
         "@movie-web/providers": "latest",
-        "express": "^4.18.3"
+        "@whatwg-node/server": "^0.9.29",
+        "itty-router": "^4.2.2"
     }
 }

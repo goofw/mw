@@ -38,6 +38,7 @@ jobs:
           sed -i '' 's|console.log(.*)||g' node_modules/@movie-web/providers/lib/index.mjs
           sed -i '' 's|console.log(.*);||g' node_modules/@movie-web/providers/lib/index.umd.js
           sed -i '' 's|console.log(.*)||g' node_modules/@movie-web/providers/lib/index.umd.js
+          sed -i '' 's|npm:@movie-web/providers|@movie-web/providers|g' index.mjs
           bun build --compile --minify --outfile movie-web index.mjs
           tar -zcvf mw-macos-amd64.tar.gz movie-web
           echo "VERSION=$(date +%Y%m%d.%H%M%S)" >> $GITHUB_ENV

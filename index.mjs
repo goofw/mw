@@ -19,7 +19,7 @@ if (process.argv.length === 2 ) {
         .get("/api/:imdb/:s?/:e?", ({ imdb, s, e, query }) => mw(imdb, s, e, query?.so, query?.eo))
         .get("/metadata", () => text(metadata))
         .get("/version", () => text(
-            readFileSync(import.meta.url.split('/').slice(2,-1).join('/') + "/VERSION", "utf-8") +
+            readFileSync(new URL('VERSION', import.meta.url), "utf-8") +
             JSON.parse(readFileSync("./node_modules/@movie-web/providers/package.json")).version + "\n"
         ))
         .get("/ip", () => fetch("https://ipinfo.io/json"))

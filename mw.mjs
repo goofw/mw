@@ -79,7 +79,7 @@ async function getMediaDetails(query, s = 1, e = 1) {
     }
 }
 
-export async function mw(query, s = 1, e = 1, so = "", eo = "") {
+export async function mw(query, s = 1, e = 1, so = "", eo = "", ip = false) {
     const media = await getMediaDetails(query, s, e);
     let input = { media: media };
     if (so && so.length)
@@ -92,7 +92,8 @@ export async function mw(query, s = 1, e = 1, so = "", eo = "") {
     let providers = buildProviders()
         .setFetcher(makeStandardFetcher(fetch))
         .setTarget(targets.ANY)
-        .enableConsistentIpForRequests()
+    if (ip)
+        providers.enableConsistentIpForRequests()
     for (let source of sources)
         providers.addSource(source)
     for (let embed of embeds)

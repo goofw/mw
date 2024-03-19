@@ -26,7 +26,6 @@ if (process.argv.length === 2 ) {
         .all("*", () => error(404))
         .handle(request)
         .then(createResponse("application/json", v => JSON.stringify(v, null, 4)))
-        .catch(error)
     )).listen(port, () => console.log(`Server ready on port ${port}.`));
 } else {
     console.log(JSON.stringify(await mw(...process.argv.slice(2, 7)), null, 4));

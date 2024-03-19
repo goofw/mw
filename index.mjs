@@ -16,7 +16,7 @@ if (process.argv.length === 2 ) {
                 return router.handle(new Request(new_url));
             }
         })
-        .get("/api/:imdb/:s?/:e?", ({ imdb, s, e, query }) => mw(imdb, s, e, query?.so, query?.eo))
+        .get("/api/:imdb/:s?/:e?", ({ imdb, s, e, query: { so, eo } }) => mw(imdb, s, e, so, eo))
         .get("/metadata", () => text(metadata))
         .get("/version", () => text(
             readFileSync(new URL('VERSION', import.meta.url), "utf-8") +
